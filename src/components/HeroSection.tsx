@@ -3,7 +3,7 @@ import LiquidDistortion from "./LiquidDistortion";
 export default function HeroSection() {
   return (
     <LiquidDistortion
-      imageUrl="/hero.png"
+      imageUrl="/hero.webp"
       className="absolute bottom-0 left-0 right-0 h-[62vh]"
       maskStyle={{
         maskImage: "url('/mask.svg')",

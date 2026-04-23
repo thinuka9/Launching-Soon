@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/hero.png",
+        url: "/hero.webp",
         width: 1200,
         height: 630,
         alt: "Notch Creative",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Notch Creative — Reality, Reimagined.",
     description: "Launching soon.",
-    images: ["/hero.png"],
+    images: ["/hero.webp"],
   },
   icons: {
     icon: "/svgs/mask.svg",
@@ -48,6 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full bg-[#040506] text-white antialiased" suppressHydrationWarning>
+        <link rel="preload" href="/hero.webp" as="image" type="image/webp" />
         {children}
       </body>
     </html>

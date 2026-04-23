@@ -9,43 +9,34 @@ interface SocialButtonProps {
   tooltip: string;
   icon: React.ReactNode;
   id: string;
+  visible: boolean;
+  onEnter: () => void;
+  onLeave: () => void;
 }
 
-function SocialButton({ href, label, tooltip, icon, id }: SocialButtonProps) {
-  const [visible, setVisible] = useState(false);
+function SocialButton({ href, label, tooltip, icon, id, visible, onEnter, onLeave }: SocialButtonProps) {
   const tooltipId = `tooltip-${id}`;
   const ref = useRef<HTMLAnchorElement>(null);
 
-  // Mouse tracking for spotlight effect
-  const mouseX = useMotionValue(24); // Center of 48px button
+  const mouseX = useMotionValue(24);
   const mouseY = useMotionValue(24);
-
-  // Smooth physics for the spotlight movement
   const springX = useSpring(mouseX, { stiffness: 500, damping: 50 });
   const springY = useSpring(mouseY, { stiffness: 500, damping: 50 });
-
-  // Map pixel coordinates to percentages for robust gradient positioning
   const xPercentage = useTransform(springX, [0, 48], [0, 100]);
   const yPercentage = useTransform(springY, [0, 48], [0, 100]);
 
-  // Button gets a soft inner spotlight following the cursor
   const buttonBackground = useMotionTemplate`radial-gradient(circle at ${xPercentage}% ${yPercentage}%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.15) 80%)`;
-
-  // Tooltip gets a glow from its bottom edge that follows the mouse X position
   const tooltipBackground = useMotionTemplate`radial-gradient(97.98% 97.98% at ${xPercentage}% 100%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.2) 100%)`;
 
   function handleMouseMove(e: MouseEvent<HTMLAnchorElement>) {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    mouseX.set(x);
-    mouseY.set(y);
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
   }
 
   function handleMouseLeave() {
-    setVisible(false);
-    // Smoothly return the spotlight to the center
+    onLeave();
     mouseX.set(24);
     mouseY.set(24);
   }
@@ -59,20 +50,18 @@ function SocialButton({ href, label, tooltip, icon, id }: SocialButtonProps) {
         animate={{
           opacity: visible ? 1 : 0,
           y: visible ? 0 : 15,
-          scale: visible ? 1 : 0.95
+          scale: visible ? 1 : 0.95,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="
-          absolute bottom-[calc(100%+12px)]
-          pointer-events-none whitespace-nowrap
-          tooltip-text
-        "
+        className="absolute bottom-[calc(100%+12px)] pointer-events-none whitespace-nowrap tooltip-text"
         style={{
           display: "flex",
           alignItems: "center",
           padding: "5px 10px 6px",
           gap: "4px",
-          background: visible ? tooltipBackground : "radial-gradient(97.98% 97.98% at 51.83% 100%, rgba(255, 255, 255, 0.31) 0%, rgba(255, 255, 255, 0.248) 100%)",
+          background: visible
+            ? tooltipBackground
+            : "radial-gradient(97.98% 97.98% at 51.83% 100%, rgba(255, 255, 255, 0.31) 0%, rgba(255, 255, 255, 0.248) 100%)",
           border: "0.5px solid rgba(255, 255, 255, 0.09)",
           borderRadius: "10px",
           backdropFilter: "blur(24px)",
@@ -84,7 +73,6 @@ function SocialButton({ href, label, tooltip, icon, id }: SocialButtonProps) {
         {tooltip}
       </motion.div>
 
-      {/* Button — Glassmorphism, with Framer Motion tracking */}
       <motion.a
         ref={ref}
         id={id}
@@ -93,21 +81,14 @@ function SocialButton({ href, label, tooltip, icon, id }: SocialButtonProps) {
         rel="noopener noreferrer"
         aria-label={label}
         aria-describedby={tooltipId}
-        onMouseEnter={() => setVisible(true)}
+        onMouseEnter={onEnter}
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove}
-        onFocus={() => setVisible(true)}
-        onBlur={() => setVisible(false)}
+        onFocus={onEnter}
+        onBlur={onLeave}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="
-          flex items-center justify-center
-          w-[44px] h-[44px]
-          rounded-[14px]
-          focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2
-          cursor-pointer
-          overflow-hidden
-        "
+        className="flex items-center justify-center w-[44px] h-[44px] rounded-[14px] focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 cursor-pointer overflow-hidden"
         style={{
           background: visible ? buttonBackground : "rgba(255, 255, 255, 0.15)",
           backdropFilter: "blur(24px)",
@@ -128,6 +109,8 @@ function SocialButton({ href, label, tooltip, icon, id }: SocialButtonProps) {
 }
 
 export default function BottomBar() {
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
       <div className="flex items-center gap-2">
@@ -137,15 +120,11 @@ export default function BottomBar() {
           href="https://www.instagram.com/thenotch.creative/"
           label="Follow Notch Creative on Instagram"
           tooltip="The pretty stuff."
+          visible={activeTooltip === "instagram"}
+          onEnter={() => setActiveTooltip("instagram")}
+          onLeave={() => setActiveTooltip(null)}
           icon={
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 14 14"
-              fill="white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 0C5.10038 0 4.8615 0.00875 4.11513 0.042C3.36875 0.077 2.86037 0.19425 2.415 0.3675C1.94761 0.542785 1.52437 0.818474 1.17513 1.17513C0.818474 1.52437 0.542785 1.94761 0.3675 2.415C0.19425 2.8595 0.076125 3.36875 0.042 4.1125C0.00875 4.86062 0 5.09863 0 7.00088C0 8.90137 0.00875 9.13938 0.042 9.88575C0.077 10.6313 0.19425 11.1396 0.3675 11.585C0.546875 12.0452 0.78575 12.4355 1.17513 12.8249C1.56363 13.2142 1.95388 13.454 2.41412 13.6325C2.86037 13.8057 3.36788 13.9239 4.11338 13.958C4.86063 13.9913 5.09862 14 7 14C8.90137 14 9.1385 13.9913 9.88575 13.958C10.6304 13.923 11.1405 13.8057 11.5859 13.6325C12.0529 13.4571 12.4759 13.1814 12.8249 12.8249C13.2142 12.4355 13.4531 12.0452 13.6325 11.585C13.8049 11.1396 13.923 10.6313 13.958 9.88575C13.9913 9.13938 14 8.90137 14 7C14 5.09862 13.9913 4.86063 13.958 4.11338C13.923 3.36875 13.8049 2.8595 13.6325 2.415C13.4572 1.94761 13.1815 1.52437 12.8249 1.17513C12.4756 0.818474 12.0524 0.542785 11.585 0.3675C11.1388 0.19425 10.6295 0.076125 9.88488 0.042C9.13762 0.00875 8.9005 0 6.99825 0H7ZM6.37262 1.26175H7.00088C8.86987 1.26175 9.09125 1.26788 9.82887 1.302C10.5114 1.33263 10.8824 1.44725 11.1291 1.54262C11.4555 1.6695 11.6891 1.82175 11.9341 2.06675C12.1791 2.31175 12.3305 2.5445 12.4574 2.87175C12.5536 3.11762 12.6674 3.48863 12.698 4.17113C12.7321 4.90875 12.7391 5.13013 12.7391 6.99825C12.7391 8.86637 12.7321 9.08862 12.698 9.82625C12.6674 10.5087 12.5528 10.8789 12.4574 11.1256C12.3444 11.4292 12.1653 11.7038 11.9332 11.9297C11.6882 12.1747 11.4555 12.3261 11.1283 12.453C10.8833 12.5493 10.5122 12.663 9.82887 12.6945C9.09125 12.7278 8.86987 12.7356 7.00088 12.7356C5.13188 12.7356 4.90963 12.7278 4.172 12.6945C3.4895 12.663 3.11937 12.5493 2.87262 12.453C2.56885 12.3403 2.2939 12.1616 2.06763 11.9297C1.83511 11.7037 1.65579 11.4287 1.54262 11.1248C1.44725 10.8789 1.33263 10.5079 1.302 9.82537C1.26875 9.08775 1.26175 8.86637 1.26175 6.9965C1.26175 5.12662 1.26875 4.907 1.302 4.16937C1.3335 3.48687 1.44725 3.11588 1.5435 2.86913C1.67037 2.54275 1.82262 2.30912 2.06763 2.06413C2.31262 1.81912 2.54537 1.66775 2.87262 1.54088C3.11937 1.44463 3.4895 1.33088 4.172 1.29938C4.81775 1.26963 5.068 1.26088 6.37262 1.26V1.26175ZM10.7371 2.42375C10.6268 2.42375 10.5176 2.44548 10.4157 2.48769C10.3138 2.52991 10.2212 2.59178 10.1432 2.66978C10.0652 2.74778 10.0033 2.84038 9.96107 2.9423C9.91885 3.04421 9.89713 3.15344 9.89713 3.26375C9.89713 3.37406 9.91885 3.48329 9.96107 3.5852C10.0033 3.68712 10.0652 3.77972 10.1432 3.85772C10.2212 3.93572 10.3138 3.99759 10.4157 4.03981C10.5176 4.08202 10.6268 4.10375 10.7371 4.10375C10.9599 4.10375 11.1736 4.01525 11.3311 3.85772C11.4886 3.70019 11.5771 3.48653 11.5771 3.26375C11.5771 3.04097 11.4886 2.82731 11.3311 2.66978C11.1736 2.51225 10.9599 2.42375 10.7371 2.42375ZM7.00088 3.4055C6.52406 3.39806 6.05053 3.48555 5.60786 3.66287C5.16518 3.8402 4.7622 4.10381 4.42238 4.43837C4.08256 4.77293 3.81269 5.17175 3.62849 5.6116C3.44428 6.05146 3.34941 6.52357 3.34941 7.00044C3.34941 7.47731 3.44428 7.94942 3.62849 8.38927C3.81269 8.82913 4.08256 9.22795 4.42238 9.5625C4.7622 9.89706 5.16518 10.1607 5.60786 10.338C6.05053 10.5153 6.52406 10.6028 7.00088 10.5954C7.9446 10.5807 8.84469 10.1954 9.50686 9.52284C10.169 8.85026 10.5402 7.94428 10.5402 7.00044C10.5402 6.0566 10.169 5.15061 9.50686 4.47803C8.84469 3.80545 7.9446 3.42022 7.00088 3.4055ZM7.00088 4.66638C7.30733 4.66638 7.61079 4.72674 7.89391 4.84401C8.17704 4.96129 8.4343 5.13318 8.651 5.34988C8.86769 5.56658 9.03959 5.82383 9.15686 6.10696C9.27414 6.39009 9.3345 6.69354 9.3345 7C9.3345 7.30646 9.27414 7.60991 9.15686 7.89304C9.03959 8.17617 8.86769 8.43342 8.651 8.65012C8.4343 8.86682 8.17704 9.03871 7.89391 9.15599C7.61079 9.27326 7.30733 9.33362 7.00088 9.33362C6.38196 9.33362 5.78839 9.08776 5.35075 8.65012C4.91311 8.21248 4.66725 7.61892 4.66725 7C4.66725 6.38108 4.91311 5.78752 5.35075 5.34988C5.78839 4.91224 6.38196 4.66638 7.00088 4.66638Z" />
             </svg>
           }
@@ -157,15 +136,11 @@ export default function BottomBar() {
           href="https://www.linkedin.com/company/notch-creative/"
           label="Connect with Notch Creative on LinkedIn"
           tooltip="Let's be official."
+          visible={activeTooltip === "linkedin"}
+          onEnter={() => setActiveTooltip("linkedin")}
+          onLeave={() => setActiveTooltip(null)}
           icon={
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 14 14"
-              fill="white"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
               <path d="M11.0833 0H2.91667C1.30608 0 0 1.30608 0 2.91667V11.0833C0 12.6939 1.30608 14 2.91667 14H11.0833C12.6945 14 14 12.6939 14 11.0833V2.91667C14 1.30608 12.6945 0 11.0833 0ZM4.66667 11.0833H2.91667V4.66667H4.66667V11.0833ZM3.79167 3.927C3.22817 3.927 2.77083 3.46617 2.77083 2.898C2.77083 2.32983 3.22817 1.869 3.79167 1.869C4.35517 1.869 4.8125 2.32983 4.8125 2.898C4.8125 3.46617 4.35575 3.927 3.79167 3.927ZM11.6667 11.0833H9.91667V7.81433C9.91667 5.84967 7.58333 5.99842 7.58333 7.81433V11.0833H5.83333V4.66667H7.58333V5.69625C8.39767 4.18775 11.6667 4.07633 11.6667 7.14058V11.0833Z" />
             </svg>
           }

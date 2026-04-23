@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, MouseEvent } from "react";
+import { useState, useRef, MouseEvent, useEffect } from "react";
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
 
 interface SocialButtonProps {
@@ -110,6 +110,17 @@ function SocialButton({ href, label, tooltip, icon, id, visible, onEnter, onLeav
 
 export default function BottomBar() {
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+
+  // Reset tooltip if user clicks a link and switches tabs — prevents stuck tooltips
+  useEffect(() => {
+    const reset = () => setActiveTooltip(null);
+    document.addEventListener("visibilitychange", reset);
+    window.addEventListener("blur", reset);
+    return () => {
+      document.removeEventListener("visibilitychange", reset);
+      window.removeEventListener("blur", reset);
+    };
+  }, []);
 
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">

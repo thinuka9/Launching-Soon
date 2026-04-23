@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+/* ─── Brand Tokens ─────────────────────────────────────────── */
+:root {
+  --nc-black: #040506;
+  --nc-white: #ffffff;
+  --nc-tracking-tooltip: -0.04em;
+}
+
+@theme inline {
+  --color-background: var(--nc-black);
+  --color-foreground: var(--nc-white);
+  --color-nc-black: var(--nc-black);
+  --color-nc-white: var(--nc-white);
+  --font-inter: var(--font-inter);
+}
+
+/* ─── Base Reset ────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  background-color: var(--nc-black);
+}
+
+body {
+  background-color: var(--nc-black);
+  color: var(--nc-white);
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--nc-white);
+  color: var(--nc-black);
+}
+
+/* ─── Tooltip Typography ────────────────────────────────────── */
+.tooltip-text {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  letter-spacing: -0.04em;
+  font-feature-settings: 'calt' off, 'liga' off;
+  font-variation-settings: 'slnt' 0;
+}
+
+/* ─── Entrance Animations (CSS only, no JS lib) ─────────────── */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease both;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-600 {
+  animation-delay: 0.6s;
+}
+
+.delay-800 {
+  animation-delay: 0.8s;
+}
+
+/* ─── Hover Animations ──────────────────────────────────────── */
+@keyframes letter-flicker {
+  0% {
+    opacity: 1;
+  }
+
+  15% {
+    opacity: 0.4;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  45% {
+    opacity: 0.7;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Only apply flicker to a few specific letters instead of all 14 */
+.flicker-svg:hover path:nth-child(2),
+.flicker-svg:hover path:nth-child(4),
+.flicker-svg:hover path:nth-child(5),
+.flicker-svg:hover path:nth-child(7),
+.flicker-svg:hover path:nth-child(9),
+.flicker-svg:hover path:nth-child(10),
+.flicker-svg:hover path:nth-child(12),
+.flicker-svg:hover path:nth-child(14) {
+  animation: letter-flicker 0.5s ease-out;
+}
+
+.flicker-svg:hover path:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.flicker-svg:hover path:nth-child(4) {
+  animation-delay: 0.1s;
+}
+
+.flicker-svg:hover path:nth-child(5) {
+  animation-delay: 0.15s;
+}
+
+.flicker-svg:hover path:nth-child(7) {
+  animation-delay: 0.25s;
+}
+
+.flicker-svg:hover path:nth-child(9) {
+  animation-delay: 0.0s;
+}
+
+.flicker-svg:hover path:nth-child(10) {
+  animation-delay: 0.12s;
+}
+
+.flicker-svg:hover path:nth-child(12) {
+  animation-delay: 0.2s;
+}
+
+.flicker-svg:hover path:nth-child(14) {
+  animation-delay: 0.08s;
+}

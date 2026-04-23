@@ -1,0 +1,23 @@
+import LiquidDistortion from "./LiquidDistortion";
+
+export default function HeroSection() {
+  return (
+    <LiquidDistortion
+      imageUrl="/hero.png"
+      className="absolute bottom-0 left-0 right-0 h-[62vh]"
+      maskStyle={{
+        maskImage: "url('/mask.svg')",
+        maskSize: "cover",
+        maskPosition: "bottom center",
+        maskRepeat: "no-repeat",
+        WebkitMaskImage: "url('/mask.svg')",
+        WebkitMaskSize: "cover",
+        WebkitMaskPosition: "bottom center",
+        WebkitMaskRepeat: "no-repeat",
+      }}
+      hitPathD="M2490.3 851.443L2159.01 1203.51C2014.81 1356.75 1934.52 1559.24 1934.52 1769.67V2337.84C1934.52 2474.58 1894.79 2608.44 1820.16 2723.07L1509.8 3199.79C1420.69 3336.67 1268.42 3419.24 1105.09 3419.24H697.472C1178.45 3269.56 1527.64 2820.9 1527.64 2290.67C1527.64 2211.43 1519.84 2133.98 1504.94 2059.11L1624.72 2260.79C1651.64 2306.16 1721.2 2287.04 1721.2 2234.32V1036.38C1721.2 972.177 1669.14 920.152 1604.94 920.152H402.32C349.523 920.152 330.48 989.847 375.972 1016.7L567.159 1129.57C495.491 1115.96 421.492 1108.85 345.863 1108.85C-306.816 1108.85 -835.902 1637.97 -835.902 2290.66C-835.902 2709.75 -617.766 3077.88 -288.788 3287.71C-669.362 3106.58 -955.993 2752.67 -1035.74 2316.25C-1193.64 1452.5 -534.517 699.971 300.415 699.971H2424.85C2503.59 699.971 2544.27 794.071 2490.28 851.428L2490.3 851.443Z"
+      hitPathViewBox="0 0 1920 1080"
+      showGlassCursor={true}
+    />
+  );
+}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "Notch Creative is a boutique creative agency crafting bold, editorial visual identities. Launching soon.",
   openGraph: {
-    title: "Notch Creative — Reality, Reimagined.",
+    title: "Notch Creative Studio",
     description:
       "Notch Creative is a boutique creative agency crafting bold, editorial visual identities. Launching soon.",
     url: "https://thenotchcreative.com",

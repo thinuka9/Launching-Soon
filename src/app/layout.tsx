@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const helveticaNeue = localFont({
+  src: "../fonts/HelveticaNeueLight.otf",
+  variable: "--font-helvetica-neue",
+  weight: "300",
   display: "swap",
 });
 
@@ -46,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${helveticaNeue.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full bg-[#040506] text-white antialiased" suppressHydrationWarning>
         <link rel="preload" href="/hero.webp" as="image" type="image/webp" />
         {children}

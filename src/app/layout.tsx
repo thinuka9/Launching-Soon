@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Notch Creative — Reality, Reimagined.",
+  title: "Notch Creative Studio",
   description:
     "Notch Creative is a boutique creative agency crafting bold, editorial visual identities. Launching soon.",
   openGraph: {

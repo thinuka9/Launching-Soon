@@ -10,7 +10,7 @@ export default function TaglineRight({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-label="Launching Soon."
       role="img"
-      className={`${className || "w-auto h-[28px] md:h-[36px] lg:h-[42px]"} scale-90 origin-right`}
+      className={`${className || "w-auto h-[28px] md:h-[36px] lg:h-[42px]"}`}
     >
       <path d="M112.219 43.6897H115.105V46.7H112.219V43.6897Z" fill="white"/>
       <path d="M101.376 33.5414C102.09 32.7035 102.338 32.4862 102.68 32.2069C103.518 31.5552 104.697 31.1517 106.032 31.1517C108.018 31.1517 109.663 31.9586 110.438 33.2931C110.842 34.0069 111.028 34.9069 111.028 35.931V46.7H108.514V36.8621C108.514 34.6276 107.397 33.4483 105.38 33.4483C102.928 33.4483 101.345 35.2173 101.345 37.9483V46.7H98.8315V31.5552H101.376V33.5414Z" fill="white"/>

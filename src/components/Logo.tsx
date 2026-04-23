@@ -1,16 +1,39 @@
 // SVG inline component — "notch creative." center logo wordmark
 // Source: assets/notch creative.svg  viewBox="0 0 4000.36 1943.37"
-export default function Logo({ className }: { className?: string }) {
+export default function Logo({
+  className,
+  style,
+  scale = 2.6,
+  offsetX = -5,
+  offsetY = -5.5,
+  transformOrigin = "left top",
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  scale?: number | string;
+  offsetX?: number | string;
+  offsetY?: number | string;
+  transformOrigin?: string;
+}) {
   return (
-    <svg
-      id="PRIMARY_LOGO"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 4000.36 1943.37"
-      fill="none"
-      aria-label="notch creative."
-      role="img"
-      className={className || "w-auto h-[28px] md:h-[36px] lg:h-[42px]"}
+    <div
+      className={className}
+      style={{
+        transform: `scale(var(--nc-logo-scale, ${scale})) translate(calc(var(--nc-logo-x, ${offsetX}) * 1px), calc(var(--nc-logo-y, ${offsetY}) * 1px))`,
+        transformOrigin: transformOrigin,
+        display: "inline-flex",
+        ...style,
+      }}
     >
+      <svg
+        id="PRIMARY_LOGO"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 4000.36 1943.37"
+        fill="none"
+        aria-label="notch creative."
+        role="img"
+        style={{ width: "100%", height: "100%" }}
+      >
       <g id="WHITE">
         {/* "notch" — top row */}
         <g>
@@ -33,6 +56,7 @@ export default function Logo({ className }: { className?: string }) {
           <path fill="#fff" d="M3547.64,1367.04v103.31h-99.05v-103.31h99.05Z"/>
         </g>
       </g>
-    </svg>
+      </svg>
+    </div>
   );
 }

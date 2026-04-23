@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/hero.webp",
+        url: "/images/Cocktail Visualization.webp",
         width: 1200,
         height: 630,
         alt: "Notch Creative",
@@ -41,10 +41,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Notch Creative — Reality, Reimagined.",
     description: "Launching soon.",
-    images: ["/hero.webp"],
+    images: ["/images/Cocktail Visualization.webp"],
   },
   icons: {
-    icon: "/svgs/mask.svg",
+    icon: "/mask.svg",
   },
 };
 
@@ -55,8 +55,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${helveticaNeue.variable} h-full`} suppressHydrationWarning>
-      <body className="min-h-full bg-[#040506] text-white antialiased" suppressHydrationWarning>
-        <link rel="preload" href="/hero.webp" as="image" type="image/webp" />
+      <head>
+        {/* Preload first hero image so the WebGL canvas has texture data immediately */}
+        <link rel="preload" href="/images/Cocktail Visualization.webp" as="image" type="image/webp" />
+      </head>
+      <body className="min-h-full bg-[#040506] text-white antialiased">
         {children}
       </body>
     </html>

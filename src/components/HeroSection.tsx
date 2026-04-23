@@ -89,9 +89,9 @@ export default function HeroSection() {
   /* ---- AMBIENT AURA SETTINGS ---- */
   const auraBlur = "180px";
   const auraOpacity = 0.8;
-  const auraSaturate = "saturate(2)";
+  const auraSaturate = "saturate(2.5)";
   const auraBrightness = "brightness(1.5)";
-  const auraSpeed = "5s";
+  const auraSpeed = "4s";
 
   const layerAStyle: AuraStyle = {
     backgroundImage: `url('${layerA}')`,

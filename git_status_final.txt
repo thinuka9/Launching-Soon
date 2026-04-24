@@ -1,15 +1,15 @@
 On branch landing-page
-Your branch is up to date with 'origin/landing-page'.
+Your branch is ahead of 'origin/landing-page' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
+  (use "git add/rm <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   src/app/globals.css
-	modified:   src/app/page.tsx
+	deleted:    git_out.txt
+	deleted:    push.bat
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	git_out.txt
-	push.bat
+	git_status_final.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")

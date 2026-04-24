@@ -35,7 +35,7 @@ export default function Home() {
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
         <TaglineCenter
           className="opacity-90 pointer-events-auto"
-          style={{ width: "38vw", maxWidth: "680px", height: "auto" }}
+          style={{ width: "var(--fluid-center-width)", maxWidth: "680px", height: "auto" }}
         />
       </div>
 

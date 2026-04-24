@@ -25,6 +25,9 @@
   /* Spacing — corner inset: 24px (mobile) → 80px (desktop) */
   --fluid-corner-inset: clamp(1.5rem, calc(1.5rem + 3.5 * (100vw - 320px) / 1600), 5rem);
 
+  /* Center tagline width: 80vw (mobile) → 38vw (desktop) */
+  --fluid-center-width: clamp(80vw, calc(80vw - 42 * (100vw - 320px) / 1600), 38vw);
+
   /* Center tagline vertical position from top: 180px → 360px */
   --fluid-center-top: clamp(11.25rem, calc(11.25rem + 11.25 * (100vw - 320px) / 1600), 22.5rem);
 
@@ -249,16 +252,19 @@ body {
 @media (max-width: 480px) {
   :root {
     /* Slightly smaller logo and taglines on very narrow screens */
-    --fluid-logo-h: clamp(1.5rem, calc(1.5rem + 0.25 * (100vw - 320px) / 160), 1.75rem);
-    --fluid-tagline-h: clamp(1.125rem, calc(1.125rem + 0.25 * (100vw - 320px) / 160), 1.375rem);
-    --fluid-corner-inset: 1.25rem; /* 20px fixed on mobile for maximum space */
+    --fluid-logo-h: clamp(1.25rem, calc(1.25rem + 0.25 * (100vw - 320px) / 160), 1.5rem);
+    --fluid-tagline-h: clamp(1rem, calc(1rem + 0.25 * (100vw - 320px) / 160), 1.25rem);
+    --fluid-corner-inset: 1.125rem;
+    /* 20px fixed on mobile for maximum space */
 
     /* Custom responsive scales for components */
-    --nc-logo-scale: 2.2;
+    /* Reduced from 2.2 to 1.8 for a cleaner look */
+    --nc-logo-scale: 1.8;
     --nc-logo-x: -2;
     --nc-logo-y: -4;
 
-    --nc-tagline-scale: 1.6;
+    /* Reduced from 1.6 to 1.4 to avoid overlap with logo */
+    --nc-tagline-scale: 1.4;
     --nc-tagline-x: -2;
     --nc-tagline-y: -1;
   }

@@ -8,12 +8,12 @@ const _size = [2048, 1638]; // fallback natural size
 export interface LiquidDistortionProps {
   /** The path to the image to distort. Fallback if imageUrls is empty. */
   imageUrl?: string;
-  /** An array of image URLs to cycle through */
-  imageUrls?: string[];
+  /** An array of image URLs (or objects with offsets) to cycle through */
+  imageUrls?: (string | { url: string; x?: number; y?: number })[];
   /** How long to hold each image before transitioning (in ms) */
   transitionInterval?: number;
   /** Callback fired when the active image changes */
-  onImageChange?: (url: string) => void;
+  onImageChange?: (url: string, offsets: { x: number; y: number }) => void;
   /** Wrapper class name */
   className?: string;
   /** CSS properties for masking (e.g., maskImage, maskSize) */
@@ -34,6 +34,10 @@ export interface LiquidDistortionProps {
   glowColor?: string;
   /** Spread/stop of the hover glow effect (e.g., '40%') */
   glowSpread?: string;
+  /** Horizontal offset for the image (0.0 is center) */
+  imageOffsetX?: number;
+  /** Vertical offset for the image (0.0 is center) */
+  imageOffsetY?: number;
 }
 
 export default function LiquidDistortion({
@@ -51,6 +55,8 @@ export default function LiquidDistortion({
   glowRadius = "600px",
   glowColor = "rgba(255,255,255,0.15)",
   glowSpread = "40%",
+  imageOffsetX = 0,
+  imageOffsetY = 0,
 }: LiquidDistortionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hitPathRef = useRef<SVGPathElement>(null);
@@ -65,12 +71,16 @@ export default function LiquidDistortion({
   const glowColorRef     = useRef(glowColor);
   const glowSpreadRef    = useRef(glowSpread);
   const showGlassCursorRef = useRef(showGlassCursor);
+  const imageOffsetXRef = useRef(imageOffsetX);
+  const imageOffsetYRef = useRef(imageOffsetY);
 
   useEffect(() => { onImageChangeRef.current = onImageChange; }, [onImageChange]);
   useEffect(() => { glowRadiusRef.current    = glowRadius;    }, [glowRadius]);
   useEffect(() => { glowColorRef.current     = glowColor;     }, [glowColor]);
   useEffect(() => { glowSpreadRef.current    = glowSpread;    }, [glowSpread]);
   useEffect(() => { showGlassCursorRef.current = showGlassCursor; }, [showGlassCursor]);
+  useEffect(() => { imageOffsetXRef.current = imageOffsetX; }, [imageOffsetX]);
+  useEffect(() => { imageOffsetYRef.current = imageOffsetY; }, [imageOffsetY]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -145,17 +155,23 @@ export default function LiquidDistortion({
         uniform sampler2D tFlow;
         uniform float uTransition;
         uniform float uDistortionStrength;
+        uniform vec2 uOffset1;
+        uniform vec2 uOffset2;
+        uniform vec2 uResolution;
         varying vec2 vUv;
         uniform vec2 uAspect1;
         uniform vec2 uAspect2;
         void main() {
           vec3 flow = texture2D(tFlow, vUv).rgb;
 
-          vec2 uv1   = (vUv - 0.5) * uAspect1 + 0.5;
+          // Crossfade between individual offsets
+          vec2 offset = mix(uOffset1, uOffset2, smoothstep(0.0, 1.0, uTransition)) / uResolution;
+
+          vec2 uv1   = (vUv - 0.5 + offset) * uAspect1 + 0.5;
           vec2 myUV1 = uv1 - flow.xy * uDistortionStrength;
           vec3 tex1  = texture2D(tWater1, myUV1).rgb;
 
-          vec2 uv2   = (vUv - 0.5) * uAspect2 + 0.5;
+          vec2 uv2   = (vUv - 0.5 + offset) * uAspect2 + 0.5;
           vec2 myUV2 = uv2 - flow.xy * uDistortionStrength;
           vec3 tex2  = texture2D(tWater2, myUV2).rgb;
 
@@ -172,6 +188,9 @@ export default function LiquidDistortion({
         uTransition:         { value: 0 },
         uAspect1:            { value: [1.0, 1.0] },
         uAspect2:            { value: [1.0, 1.0] },
+        uOffset1:            { value: [imageOffsetX, imageOffsetY] },
+        uOffset2:            { value: [imageOffsetX, imageOffsetY] },
+        uResolution:         { value: [gl.canvas.width, gl.canvas.height] },
         tFlow:               flowmap.uniform,
       },
     });
@@ -195,15 +214,17 @@ export default function LiquidDistortion({
       if (preloadedImages[index]) return preloadedImages[index]!;
       
       return new Promise((resolve, reject) => {
+        const item = imagesList[index];
+        const src = typeof item === "string" ? item : item.url;
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.src = imagesList[index];
+        img.src = src;
         img.onload = () => {
           preloadedImages[index] = img;
           resolve(img);
         };
         img.onerror = () => {
-          console.warn(`[LiquidDistortion] Failed to load: ${imagesList[index]}`);
+          console.warn(`[LiquidDistortion] Failed to load: ${src}`);
           reject();
         };
       });
@@ -254,6 +275,8 @@ export default function LiquidDistortion({
           const [a2x, a2y] = calcAspect(nextImg.naturalWidth, nextImg.naturalHeight, width, height);
           mesh.program.uniforms.uAspect2.value = [a2x, a2y];
         }
+
+        mesh.program.uniforms.uResolution.value = [width, height];
       });
     }
 
@@ -265,7 +288,16 @@ export default function LiquidDistortion({
       t1.image = activeImg;
       t1.needsUpdate = true;
       resize();
-      onImageChangeRef.current?.(imagesList[0]);
+
+      const item = imagesList[0];
+      const url = typeof item === "string" ? item : item.url;
+      const ox = (typeof item === "object" ? item.x : 0) ?? 0;
+      const oy = (typeof item === "object" ? item.y : 0) ?? 0;
+      
+      program.uniforms.uOffset1.value = [ox + imageOffsetXRef.current, oy + imageOffsetYRef.current];
+      program.uniforms.uOffset2.value = [ox + imageOffsetXRef.current, oy + imageOffsetYRef.current];
+      
+      onImageChangeRef.current?.(url, { x: ox, y: oy });
       if (imagesList.length > 1 && !transitionTimer) {
         transitionTimer = setInterval(startNextTransition, transitionInterval);
       }
@@ -275,12 +307,8 @@ export default function LiquidDistortion({
     async function startNextTransition() {
       if (isTransitioning) return;
 
-      // Pick a random image different from the current one
-      let next = Math.floor(Math.random() * imagesList.length);
-      if (next === currentIndex) {
-        next = (currentIndex + 1) % imagesList.length;
-      }
-      nextImageIndex = next;
+      // Pick the next image in order
+      nextImageIndex = (currentIndex + 1) % imagesList.length;
 
       try {
         const nextImg = await getOrLoadImage(nextImageIndex);
@@ -288,10 +316,18 @@ export default function LiquidDistortion({
         t2.image = nextImg;
         t2.needsUpdate = true;
         resize(); // recalculate uAspect2 for the incoming image
+        
+        const item = imagesList[nextImageIndex];
+        const url = typeof item === "string" ? item : item.url;
+        const ox = (typeof item === "object" ? item.x : 0) ?? 0;
+        const oy = (typeof item === "object" ? item.y : 0) ?? 0;
+
+        program.uniforms.uOffset2.value = [ox + imageOffsetXRef.current, oy + imageOffsetYRef.current];
+
         isTransitioning     = true;
         transitionProgress  = 0;
         transitionStartTime = performance.now();
-        onImageChangeRef.current?.(imagesList[nextImageIndex]);
+        onImageChangeRef.current?.(url, { x: ox, y: oy });
       } catch (e) {
         console.error("[LiquidDistortion] Transition failed", e);
       }
@@ -417,9 +453,12 @@ export default function LiquidDistortion({
           t1.image = preloadedImages[currentIndex];
           t1.needsUpdate = true;
 
-          // Copy aspect as a new array (avoid shared reference mutation bug)
+          // Copy aspect and offset as a new array
           const a2 = mesh.program.uniforms.uAspect2.value as number[];
           mesh.program.uniforms.uAspect1.value = [a2[0], a2[1]];
+
+          const o2 = mesh.program.uniforms.uOffset2.value as number[];
+          mesh.program.uniforms.uOffset1.value = [o2[0], o2[1]];
 
           // Snap transition back to 0 — invisible because t1 now matches
           program.uniforms.uTransition.value = 0;
@@ -436,6 +475,11 @@ export default function LiquidDistortion({
       flowmap.update();
 
       program.uniforms.uTime.value = t * 0.01;
+      
+      // Global offsets are added in the initialization and transition starts, 
+      // but if they change dynamically, we should update them here too.
+      // However, we need to know the base offset of the current image.
+      // For now, we'll rely on the transition logic to set them.
 
       // Only render if we have a valid size
       if (gl.canvas.width > 0 && gl.canvas.height > 0) {

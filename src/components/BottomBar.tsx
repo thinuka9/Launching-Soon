@@ -83,7 +83,10 @@ function SocialButton({ href, label, tooltip, icon, id, visible, onEnter, onLeav
         aria-describedby={tooltipId}
         onMouseEnter={onEnter}
         onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
+        onMouseMove={(e) => {
+          e.stopPropagation();
+          handleMouseMove(e);
+        }}
         onFocus={onEnter}
         onBlur={onLeave}
         whileHover={{ scale: 1.05 }}
@@ -95,11 +98,13 @@ function SocialButton({ href, label, tooltip, icon, id, visible, onEnter, onLeav
           WebkitBackdropFilter: "blur(24px)",
           border: "1px solid rgba(255, 255, 255, 0.1)",
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+          cursor: "pointer",
         }}
       >
         <motion.div
           animate={{ scale: visible ? 1.05 : 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="pointer-events-none"
         >
           {icon}
         </motion.div>
@@ -123,7 +128,7 @@ export default function BottomBar() {
   }, []);
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100]">
       <div className="flex items-center gap-2">
         {/* Instagram */}
         <SocialButton

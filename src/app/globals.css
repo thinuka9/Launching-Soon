@@ -33,14 +33,12 @@
 
   /* Hero section height: 55vh → 65vh */
   --fluid-hero-h: clamp(55vh, calc(55vh + 10 * (100vw - 320px) / 1600), 65vh);
-}
 
-@theme inline {
+  /* Theme variables (moved from @theme to silence IDE warnings) */
   --color-background: var(--nc-black);
   --color-foreground: var(--nc-white);
   --color-nc-black: var(--nc-black);
   --color-nc-white: var(--nc-white);
-  --font-inter: var(--font-inter);
 }
 
 /* ─── Base Reset ────────────────────────────────────────────── */
@@ -50,7 +48,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  cursor: default;
 }
 
 html {
@@ -68,6 +65,7 @@ body {
   overflow-x: hidden;
   user-select: none;
   -webkit-user-select: none;
+  cursor: default;
 }
 
 ::selection {
@@ -246,6 +244,35 @@ body {
 
 .flicker-svg:hover path:nth-child(14) {
   animation-delay: 0.08s;
+}
+
+/* ─── Ellipsis Loading Animation ──────────────────────────── */
+.loading-dot {
+  animation: loading-ellipsis 0.6s infinite;
+}
+
+.dot-1 {
+  animation-delay: 0s;
+}
+
+.dot-2 {
+  animation-delay: 0.2s;
+}
+
+.dot-3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes loading-ellipsis {
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ─── Mobile Responsiveness Tweaks ──────────────────────────── */

@@ -3,19 +3,20 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import LiquidDistortion from "./LiquidDistortion";
 
 const heroImages = [
-  "/images/Cocktail Visualization.webp",
-  "/images/Excellence 05.webp",
-  "/images/Fendi 02.webp",
-  "/images/Fendi 03.webp",
-  "/images/Fendi 06.webp",
-  "/images/Porsche Visualization 02.webp",
-  "/images/Porsche Visualization 03.webp",
-  "/images/Porsche Visualization 05.webp",
-  "/images/Porsche Visualization 06.webp",
-  "/images/Preza 06.webp",
-  "/images/Valentino Green 02.webp",
-  "/images/Valentino Green 03.webp",
-  "/images/Valentino Green 04.webp"
+  { url: "/images/01.webp", x: 0, y: 0 },
+  { url: "/images/02.webp", x: 0, y: 0 },
+  { url: "/images/03.webp", x: 0, y: 0 },
+  { url: "/images/04.webp", x: 0, y: 0 },
+  { url: "/images/05.webp", x: 0, y: 0 },
+  { url: "/images/06.webp", x: 0, y: 0 },
+  { url: "/images/07.webp", x: 0, y: 0 },
+  { url: "/images/08.webp", x: 0, y: 0 },
+  { url: "/images/09.webp", x: 0, y: 0 },
+  { url: "/images/10.webp", x: 0, y: 0 },
+  { url: "/images/11.webp", x: 0, y: 0 },
+  { url: "/images/12.webp", x: 0, y: 0 },
+  { url: "/images/13.webp", x: 0, y: 0 },
+  { url: "/images/14.webp", x: 0, y: 0 }
 ];
 
 /**
@@ -41,7 +42,17 @@ const AURA_FADE_MS = 3000;
 
 type AuraStyle = React.CSSProperties & { "--aura-speed": string };
 
-export default function HeroSection() {
+export default function HeroSection({
+  imageOffsetX = 0,
+  imageOffsetY = 0,
+  maskOffsetX = 0,
+  maskOffsetY = 0,
+}: {
+  imageOffsetX?: number;
+  imageOffsetY?: number;
+  maskOffsetX?: number;
+  maskOffsetY?: number;
+}) {
   const [layerA, setLayerA] = useState(heroImages[0]);
   const [layerB, setLayerB] = useState(heroImages[0]);
   const [layerBOpacity, setLayerBOpacity] = useState(0);
@@ -54,11 +65,11 @@ export default function HeroSection() {
     };
   }, []);
 
-  const handleImageChange = useCallback((url: string) => {
+  const handleImageChange = useCallback((url: string, offsets: { x: number; y: number }) => {
     if (swapTimerRef.current) clearTimeout(swapTimerRef.current);
 
     // 1. Load incoming image into the invisible Layer B
-    setLayerB(url);
+    setLayerB({ url, ...offsets });
 
     // 2. Double-rAF: browser must paint opacity:0 before we switch to 1
     requestAnimationFrame(() => {
@@ -69,20 +80,20 @@ export default function HeroSection() {
 
     // 3. After fade completes, silently promote Layer A and reset Layer B
     swapTimerRef.current = setTimeout(() => {
-      setLayerA(url);       // A shows the new image (was already showing via B)
-      setLayerBOpacity(0);  // B snaps to 0 instantly (transition:"none")
-      setLayerB(url);       // keep B in sync for the next round
+      setLayerA({ url, ...offsets }); // A shows the new image (was already showing via B)
+      setLayerBOpacity(0);           // B snaps to 0 instantly (transition:"none")
+      setLayerB({ url, ...offsets }); // keep B in sync for the next round
     }, AURA_FADE_MS + 80);  // tiny buffer past the transition end
   }, []);
 
   const maskStyle: React.CSSProperties = {
     maskImage: "url('/mask.svg')",
     maskSize: "cover",
-    maskPosition: "bottom center",
+    maskPosition: `calc(50% + ${maskOffsetX}px) calc(100% + ${maskOffsetY}px)`,
     maskRepeat: "no-repeat",
     WebkitMaskImage: "url('/mask.svg')",
     WebkitMaskSize: "cover",
-    WebkitMaskPosition: "bottom center",
+    WebkitMaskPosition: `calc(50% + ${maskOffsetX}px) calc(100% + ${maskOffsetY}px)`,
     WebkitMaskRepeat: "no-repeat",
   };
 
@@ -94,7 +105,8 @@ export default function HeroSection() {
   const auraSpeed = "4s";
 
   const layerAStyle: AuraStyle = {
-    backgroundImage: `url('${layerA}')`,
+    backgroundImage: `url('${layerA.url}')`,
+    backgroundPosition: `calc(50% - ${layerA.x + imageOffsetX}px) calc(50% - ${layerA.y + imageOffsetY}px)`,
     opacity: 1,
     zIndex: 1,
     transition: "none",
@@ -102,7 +114,8 @@ export default function HeroSection() {
   };
 
   const layerBStyle: AuraStyle = {
-    backgroundImage: `url('${layerB}')`,
+    backgroundImage: `url('${layerB.url}')`,
+    backgroundPosition: `calc(50% - ${layerB.x + imageOffsetX}px) calc(50% - ${layerB.y + imageOffsetY}px)`,
     opacity: layerBOpacity,
     // Transition only when fading IN. The snap-reset back to 0 must be instant
     // (invisible because Layer A already shows the correct image at that point).
@@ -134,13 +147,13 @@ export default function HeroSection() {
 
           {/* Layer A: always opacity 1, shows the current image */}
           <div
-            className="absolute inset-0 w-full h-full bg-cover bg-center animate-aura-flow"
+            className="absolute inset-0 w-full h-full bg-cover animate-aura-flow"
             style={{ ...layerAStyle, willChange: "opacity" }}
           />
 
           {/* Layer B: fades in (0→1) then snaps back to 0 invisibly */}
           <div
-            className="absolute inset-0 w-full h-full bg-cover bg-center animate-aura-flow"
+            className="absolute inset-0 w-full h-full bg-cover animate-aura-flow"
             style={{ ...layerBStyle, willChange: "opacity" }}
           />
 
@@ -154,6 +167,8 @@ export default function HeroSection() {
         onImageChange={handleImageChange}
         className="absolute inset-0"
         maskStyle={maskStyle}
+        imageOffsetX={imageOffsetX}
+        imageOffsetY={imageOffsetY}
         hitPathD="M2490.3 851.443L2159.01 1203.51C2014.81 1356.75 1934.52 1559.24 1934.52 1769.67V2337.84C1934.52 2474.58 1894.79 2608.44 1820.16 2723.07L1509.8 3199.79C1420.69 3336.67 1268.42 3419.24 1105.09 3419.24H697.472C1178.45 3269.56 1527.64 2820.9 1527.64 2290.67C1527.64 2211.43 1519.84 2133.98 1504.94 2059.11L1624.72 2260.79C1651.64 2306.16 1721.2 2287.04 1721.2 2234.32V1036.38C1721.2 972.177 1669.14 920.152 1604.94 920.152H402.32C349.523 920.152 330.48 989.847 375.972 1016.7L567.159 1129.57C495.491 1115.96 421.492 1108.85 345.863 1108.85C-306.816 1108.85 -835.902 1637.97 -835.902 2290.66C-835.902 2709.75 -617.766 3077.88 -288.788 3287.71C-669.362 3106.58 -955.993 2752.67 -1035.74 2316.25C-1193.64 1452.5 -534.517 699.971 300.415 699.971H2424.85C2503.59 699.971 2544.27 794.071 2490.28 851.428L2490.3 851.443Z"
         hitPathViewBox="0 0 1920 1080"
         showGlassCursor={true}

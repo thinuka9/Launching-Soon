@@ -36,11 +36,18 @@ export default function Home() {
         <TaglineCenter
           className="opacity-90 pointer-events-auto"
           style={{ width: "var(--fluid-center-width)", maxWidth: "680px", height: "auto" }}
+          redesignOffsetX={-4}
+          redesignOffsetY={0}
         />
       </div>
 
       {/* Background Hero with WebGL Mask */}
-      <HeroSection />
+      <HeroSection
+        imageOffsetX={0}
+        imageOffsetY={0}
+        maskOffsetX={0}
+        maskOffsetY={0}
+      />
 
       {/* Social Footer */}
       <BottomBar />

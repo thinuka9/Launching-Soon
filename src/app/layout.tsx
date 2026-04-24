@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     images: ["/images/Cocktail Visualization.webp"],
   },
   icons: {
-    icon: "/mask.svg",
+    icon: "/favicon.svg",
   },
 };
 

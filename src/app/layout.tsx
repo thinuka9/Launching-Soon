@@ -49,6 +49,7 @@ export const metadata: Metadata = {
 };
 
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function RootLayout({
   children,
@@ -64,6 +65,7 @@ export default function RootLayout({
       <body className="min-h-full bg-[#040506] text-white antialiased">
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

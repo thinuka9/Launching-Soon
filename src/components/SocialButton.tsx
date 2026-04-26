@@ -2,6 +2,7 @@
 
 import { useRef, MouseEvent } from "react";
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion";
+import Clarity from '@microsoft/clarity';
 
 interface SocialButtonProps {
   href: string;
@@ -103,6 +104,7 @@ export default function SocialButton({
         }}
         onFocus={onEnter}
         onBlur={onLeave}
+        onClick={() => Clarity.event(`social_click_${id}`)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className="flex items-center justify-center w-[44px] h-[44px] rounded-[14px] focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 cursor-pointer overflow-hidden"

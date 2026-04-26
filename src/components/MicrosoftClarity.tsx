@@ -10,6 +10,8 @@ export default function MicrosoftClarity() {
     
     if (clarityId) {
       Clarity.init(clarityId);
+      // For optimal user tracking as per Microsoft documentation
+      Clarity.identify('anonymous_visitor');
     } else {
       console.warn('Microsoft Clarity ID is missing. Please set NEXT_PUBLIC_CLARITY_ID in your environment variables.');
     }

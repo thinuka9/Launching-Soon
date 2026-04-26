@@ -49,7 +49,6 @@ export const metadata: Metadata = {
 };
 
 import { Analytics } from "@vercel/analytics/react";
-import MicrosoftClarity from "@/components/MicrosoftClarity";
 
 export default function RootLayout({
   children,
@@ -63,7 +62,6 @@ export default function RootLayout({
         <link rel="preload" href="/images/01.webp" as="image" type="image/webp" />
       </head>
       <body className="min-h-full bg-[#040506] text-white antialiased">
-        <MicrosoftClarity />
         {children}
         <Analytics />
       </body>
